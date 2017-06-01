@@ -5,7 +5,7 @@ We'll be storing the code behind these visuals. The project is not online yet.
 
 ![Full Explorer](https://github.com/dgaitsgo/exploreVelib/blob/master/fullExplorer.png)
 
-##Tools Used
+## Tools Used
 
 - [mapbox GL][1]
 - [moment.js][2]
