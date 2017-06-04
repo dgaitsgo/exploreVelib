@@ -1,9 +1,3 @@
-//Notes:
-/***************************************************************/
-//How to judge the activity of any given day?
-//the amount of changes in available bikes - relate that to temperature?
-//Mapping fluctuation
-
 //Reqs:
 /***************************************************************/
 
@@ -59,35 +53,10 @@ function fetchDateRangeArray() {
 	return (dateRanges);
 }
 
-// function getPositions(dir) {
-// 	var data = [];
-// 	var timestamps = [];
-// 	var j = 0;
-// 	fs.readdirSync(dir).forEach(file => {
-// 		var snapshot = JSON.parse(fs.readFileSync(dir + file), 'utf8');
-// 		if (file != '.' && file != '..')
-// 			timestamps.push(file);
-// 		for (var i = 0; i < snapshot.length; i++) {
-// 			var obj = snapshot[i];
-// 			var ob = {
-// 				lat : obj.position.lat,
-// 				lng : obj.position.lng,
-// 				ratio : obj.available_bikes / obj.bike_stands,
-// 				timestamp : file };
-// 			data.push(ob);
-// 		}
-//   	});
-//   	timestamps.sort();
-// 	return ({
-// 				points : data,
-// 				timestamps : timestamps
-// 			});
-// }
-
 function getGeoJson(day) {
 	
 	var ret = JSON.parse(fs.readFileSync(snapshotsSource + day), 'utf8');
-	ret.points = GeoJSON.parse(ret.points, {Point: ['lat', 'lng'],  include: ['timestamp', 'ratio']});
+	ret.points = GeoJSON.parse(ret.points, {Point: ['lat', 'lng'],  include: ['timestamp', 'ratio', 'size']});
 	ret.points = {"id": day,
 				"type": "circle",
         		"source": {
@@ -96,8 +65,11 @@ function getGeoJson(day) {
             	},
             	'paint': {
 					'circle-radius': {
-						'base': 3.5,
-						'stops': [[18, 5], [80, 90]]
+						property : 'size',
+						'stops': [
+							[0, 0],
+							[200, 200]
+						]
 					},
 					'circle-color': {
 						property: 'ratio',
@@ -107,10 +79,10 @@ function getGeoJson(day) {
 		                    [0.5, 'yellow'],
 		                    [1.0, 'blue']
 		        		]
-					}
+					},
+					'circle-stroke-width' : 1,
 				}
 			};
-    // console.log(JSON.stringify(ob, null, 2));
 	return (ret);
 }
 

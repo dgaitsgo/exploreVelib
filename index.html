@@ -14,8 +14,22 @@
 	<body style='background: #F9F9F9'>
 		<div id='map' style='width: 1300px; height: 700px;'></div>
 		<div id='console'>
-			<h1>A Year of Vélib</h1>
+			<h1>A Year of Vélib'</h1>
 			<p><a href='https://developer.jcdecaux.com/#/home'>Data</a> from December 2016 to May 2017</p>
+				<div>
+					<h2>Total bikes at Station</h2>
+					<svg height = "80px", width="inherit", fill="white", stroke="black", stroke-width = "1px">
+						<g>
+							<circle class="proportions" align="left", cx="25", cy="30", r="5"/>
+							<text x="22", y="70", font-size="10", fill="black">8</text>
+						</g>
+						<g>
+							<circle class="proportions" align="left", cx="80" cy="30" r="15"/>
+							<text x="72", y="70", font-size="15", fill="black">72</text>
+						</g>
+						<!-- <circle align="center", cx="250" cy="25" r="25"/> -->
+					</svg>
+				</div>
 			<div class='session'>
 				<h2>Availability Ratio</h2>
 				<div class='row colors'>
@@ -25,7 +39,6 @@
 					<div class='label'>0.5</div>
 					<div class='label'>1.0</div>
 				</div>
-
 				<div class='session' id='sliderbar'>
 					<h2>Date: <label id='active-date'>0:00</label></h2>
 						<input id='slider-date' class='row' type='range' min='0' max='365' step='1' value='0' />
@@ -34,84 +47,6 @@
 				</div>
 			</div>
 		</div>
-		<script>
-
-			var currData;
-			var map;
-			var dateRange;
-
-			function resetHourSlider(timestamp) {
-				var date = new Date(timestamp * 1000);
-				var minutes = date.getMinutes();
-				if (minutes < 10)
-					minutes = "0" + minutes;
-				var s = date.getHours() + ":" + minutes;
-				document.getElementById('active-hour').innerText = s;
-			}
-
-			function resetDateSlider(timestamp) {
-				var date = new Date(timestamp * 1000);
-				var s = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
-				console.log(date);
-				document.getElementById('slider-hour').value = 0;
-				document.getElementById('active-date').innerText = s;
-			}
-
-			socket.on('dateRange', function(data) {
-				
-				dateRange = data;
-				
-					//Adjust date slider:
-				document.getElementById('slider-date').max = dateRange.length - 2;
-				resetDateSlider(dateRange[0]);
-
-					//Fetch Map:
-				mapboxgl.accessToken =
-				'pk.eyJ1IjoiaXNhYWNsdW1wa2lucyIsImEiOiJjajNhdTVlZXMwMGFnMzJvNzdoemQ0N3phIn0.hv3Atoq7kaBU9F-YCBGBOw';
-				map = new mapboxgl.Map({
-					container: 'map',
-					zoom: 11,
-					center: [2.3522, 48.8566],
-					style: 'mapbox://styles/isaaclumpkins/cj3b5c6bp00082rpmdkhz0rhb'
-				});
-
-					//Get/set Initial data Initial Data
-				socket.emit('fetchDay', dateRange[0], function (data) {
-					currData = data;
-					map.on('load', function () {
-					map.addLayer(data.points);
-					map.setFilter(dateRange[0], ['==', 'timestamp', data.timestamps[0]]);
-					document.getElementById('slider-hour').max = data.timestamps.length - 1;
-					resetHourSlider(data.timestamps[0]);
-					});
-				});
-			});
-			document.getElementById('slider-date').addEventListener('input', function(e) {
-				var dateIndex = parseInt(e.target.value);
-				resetDateSlider(dateRange[dateIndex]);
-			});
-
-			
-			document.getElementById('slider-date').addEventListener('change', function(e) {
-				var prevDate = currData.points.id;
-					console.log(prevDate);
-				var dateIndex = parseInt(e.target.value);
-				var dateValue = dateRange[dateIndex];
-				socket.emit('fetchDay', dateValue, function (data) {
-					currData = data;
-					map.removeLayer(prevDate);
-					map.removeSource(prevDate);
-					map.addLayer(data.points);
-					map.setFilter(data.points.id, ['==', 'timestamp', data.timestamps[0]]);
-					document.getElementById('slider-hour').max = data.timestamps.length - 1;
-					resetHourSlider(data.timestamps[0]);
-				});
-			});
-			document.getElementById('slider-hour').addEventListener('input', function(e) {
-				var hour = parseInt(e.target.value);
-				resetHourSlider(currData.timestamps[hour]);
-				map.setFilter(currData.points.id, ['==', 'timestamp', currData.timestamps[hour]]);
-			});
-		</script>
+		<script src="/displayMap.js"></script>
 	</body>
 </html>
