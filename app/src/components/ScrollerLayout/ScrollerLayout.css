@@ -1,0 +1,38 @@
+#sections {
+    position: relative;
+    /* width: 250px; */
+    top: 0px;
+    z-index: 90;
+}
+
+.section-title {
+    text-decoration: underline;
+}
+
+.left {
+    width: 16em;
+}
+
+.section-vis {
+    /* display: flex; */
+    /* justify-content: space-between; */
+    /* align-items: center; */
+    margin-left: 6em;
+}
+
+.step {
+    display: flex;
+    margin-bottom: 10em;
+}
+
+#vis {
+    display: inline-block;
+    position: fixed;
+    top: 60px;
+    z-index: 1;
+    margin-left: 0;
+
+    height: 600px;
+    width: 600px;
+    background-color: #ddd;
+}
